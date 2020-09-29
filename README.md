@@ -1,4 +1,4 @@
 # CoRenpy
 
 
-Small program to organize Renpy spaces/lines on a Renpy file.
+Small program to organize spaces/lines on a Renpy file.
