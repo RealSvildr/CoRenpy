@@ -35,6 +35,7 @@
             this.processPath = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
+            this.cMod = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // textBox1
@@ -96,11 +97,22 @@
             this.label2.TabIndex = 5;
             this.label2.Text = "Process Inserted Text";
             // 
+            // cMod
+            // 
+            this.cMod.AutoSize = true;
+            this.cMod.Location = new System.Drawing.Point(15, 554);
+            this.cMod.Name = "cMod";
+            this.cMod.Size = new System.Drawing.Size(148, 17);
+            this.cMod.TabIndex = 6;
+            this.cMod.Text = "Add \'_mod\' tag on Images";
+            this.cMod.UseVisualStyleBackColor = true;
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(846, 594);
+            this.Controls.Add(this.cMod);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.processPath);
@@ -123,6 +135,7 @@
         private System.Windows.Forms.Button processPath;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.CheckBox cMod;
     }
 }
 

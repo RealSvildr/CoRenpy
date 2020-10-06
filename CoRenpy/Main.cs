@@ -21,7 +21,6 @@ namespace CoRenpy {
 
         private void processText_Click(object sender, EventArgs e) {
             textBox1.Text = ProcessFile(textBox1.Text);
-
         }
 
         private void ProcessDir(string dir) {
@@ -46,6 +45,7 @@ namespace CoRenpy {
             List<string> lines = new List<string>();
             Type thisType = Type.Empty;
             int thisIdent = 0;
+            List<string> listOfMods = new List<string>();
 
             foreach (var line in textLines) {
                 var lastType = thisType;
@@ -101,84 +101,26 @@ namespace CoRenpy {
                     }
                 }
 
+                if (thisType == Type.Renpy && thisLine.StartsWith("image ") && cMod.Checked) {
+                    var tempName = thisLine.Substring(thisLine.IndexOf("image ") + 6, thisLine.IndexOf("=") - 6).Trim();
+
+                    if (thisLine.IndexOf(" =") > 0)
+                        thisLine = thisLine.Substring(0, thisLine.IndexOf(" =")) + "_mod" + thisLine.Substring(thisLine.IndexOf(" ="));
+                    else
+                        thisLine = thisLine.Substring(0, thisLine.IndexOf("=")) + "_mod " + thisLine.Substring(thisLine.IndexOf("="));
+
+                    listOfMods.Add($"    '{tempName}': '{tempName}_mod',");
+                }
+
+                if (thisType == Type.Closing && thisIdent == lastIdent && thisIdent > 0)
+                    thisIdent--;
+
                 lines.Add(GetIdented(thisIdent) + thisLine);
             }
-
-            return string.Join("\r\n", lines);
+            
+			var newLine = Environment.NewLine;
+            return string.Join(newLine, lines) + newLine + string.Join(newLine, listOfMods);
         }
-
-        #region PrintScreen (Removed)
-        //[DllImport("User32.dll")]
-        //private static extern short GetAsyncKeyState(System.Windows.Forms.Keys vKey);
-
-        //[DllImport("user32.dll", CharSet = CharSet.Auto)]
-        //public static extern IntPtr FindWindow(string strClassName, string strWindowName);
-
-        //[DllImport("user32.dll")]
-        //public static extern bool GetWindowRect(IntPtr hwnd, ref Rect rectangle);
-
-        //public struct Rect {
-        //    public int Left { get; set; }
-        //    public int Top { get; set; }
-        //    public int Right { get; set; }
-        //    public int Bottom { get; set; }
-        //}
-
-        //public void StartPrintScreen()
-        //{
-        //    var thPrint = new Thread(PrintScreen) {
-        //        IsBackground = true
-        //    };
-
-        //    thPrint.Start();
-        //}
-        //public void PrintScreen()
-        //{
-        //    while (true)
-        //    {
-        //        if (GetAsyncKeyState(Keys.PrintScreen) > 0)
-        //        {
-
-        //            try
-        //            {
-        //                Process[] processes = Process.GetProcessesByName("notepad");
-        //                Process lol = processes[0];
-        //                IntPtr ptr = lol.MainWindowHandle;
-        //                Rect NotepadRect = new Rect();
-        //                GetWindowRect(ptr, ref NotepadRect);
-
-        //                var saveFile = Environment.CurrentDirectory + "\\Image.png";
-        //                var imgCounter = 2;
-        //                while (File.Exists(saveFile))
-        //                {
-        //                    saveFile = Environment.CurrentDirectory + "\\Image " + imgCounter + ".png";
-        //                    imgCounter++;
-        //                }
-
-        //                this.Invoke(new MethodInvoker(delegate { this.Hide(); }));
-
-        //                var bmpScreenshot = new Bitmap(this.Bounds.Width, this.Bounds.Height, PixelFormat.Format32bppArgb);
-        //                var gfxScreenshot = Graphics.FromImage(bmpScreenshot);
-
-        //                gfxScreenshot.CopyFromScreen(this.Bounds.X, this.Bounds.Y, 0, 0, this.Bounds.Size, CopyPixelOperation.SourceCopy);
-
-        //                bmpScreenshot.Save(saveFile, ImageFormat.Png);
-
-        //            }
-        //            catch (Exception)
-        //            {
-
-        //            }
-        //            finally
-        //            {
-        //                this.Invoke(new MethodInvoker(delegate { this.Show(); }));
-        //            }
-        //        }
-
-        //        Thread.Sleep(300);
-        //    }
-        //}
-        #endregion
 
         private Type GetType(string line) {
             if (line == "")
@@ -231,6 +173,9 @@ namespace CoRenpy {
 
             if (line.Last() == ':')
                 return Type.Renpy;
+
+            if (line.StartsWith(")"))
+                return Type.Closing;
 
             return Type.Talk;
         }
@@ -287,7 +232,8 @@ namespace CoRenpy {
         Empty,
         Comment,
         DecompilerComment,
-        Python
+        Python,
+        Closing
     }
 
     public static class StaticObj {
